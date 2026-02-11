@@ -185,7 +185,11 @@ return {
 					{ "<leader>fsr", ":PossessionLoad<cr>", desc = "Restore Session", silent = true },
 					{ "<leader>fsl", ":PossessionList<cr>", desc = "List Sessions", silent = true },
 				},
-				opts = {},
+				opts = {
+					autosave = {
+						current = true,
+					},
+				},
 			},
 		},
 
