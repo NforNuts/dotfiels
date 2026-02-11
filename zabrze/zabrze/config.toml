@@ -29,6 +29,11 @@ trigger = "gs"
 snippet = "git status"
 
 [[snippets]]
+name = "git commit -m"
+trigger = "gcm"
+snippet = "git committ -m '{}'"
+
+[[snippets]]
 name = "git log --graph --oneline"
 trigger = "gl"
 snippet = "git log --graph --oneline"
@@ -52,9 +57,3 @@ snippet = "yazi"
 name = "nvim"
 trigger = "v"
 snippet = "nvim"
-
-[[snippets]]
-name = "selfhosted"
-trigger = "sv"
-snippet = "NVIM_APPNAME=selfhosted nvim"
-
