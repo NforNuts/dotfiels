@@ -330,9 +330,18 @@ return {
 				-- DAP configuration
 				dap = {
 					configuration = {
-						name = "basic configuration",
+						name = "Clear step-avoid-regexp",
 						type = "codelldb",
 						request = "launch",
+						stopOnEntry = false,
+						sourceLanguages = { "rust" },
+						postRunCommands = {
+							-- sourceLanguagesを設定するとcodelldbのlang_support/rust.pyが起動され
+							-- lldbの設定であるtarget.process.thread.step-avoid-regexpにスキップすべき関数の正規表現がセットされる
+							-- これをクリアすることでRustの標準ライブラリにもステップインできる様になる
+							-- 以下がクリアするコマンド
+							"settings clear target.process.thread.step-avoid-regexp",
+						},
 					},
 				},
 			}
