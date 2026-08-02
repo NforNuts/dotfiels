@@ -1,427 +1,190 @@
+vim.g.rustaceanvim = {
+  dap = {
+    configuration = {
+      name = "Clear step-avoid-regexp",
+      type = "codelldb",
+      request = "launch",
+      stopOnEntry = false,
+      sourceLanguages = { "rust" },
+      postRunCommands = {
+        -- sourceLanguagesを設定するとcodelldbのlang_support/rust.pyが起動され
+        -- lldbの設定であるtarget.process.thread.step-avoid-regexpにスキップすべき関数の正規表現がセットされる
+        -- これをクリアすることでRustの標準ライブラリにもステップインできる様になる
+        -- 以下がクリアするコマンド
+        "settings clear target.process.thread.step-avoid-regexp",
+      },
+    },
+  },
+}
+
 return {
-	--===============
-	--   blink.cmp
-	--===============
-	{
-		"saghen/blink.cmp",
+  {
+    "nvim-lspconfig",
+    opts = function(_, opts)
+      opts.inlay_hints = { enabled = false }
+      opts.servers.taplo = nil
+      opts.servers.tombi = {}
+    end,
+  },
 
-		dependencies = {
-			"rafamadriz/friendly-snippets",
-		},
-		event = { "InsertEnter", "CmdlineEnter" },
-		build = "cargo build --release",
-
-		opts = {
-			signature = { enabled = true },
-
-			keymap = { preset = "default" },
-
-			cmdline = {
-				enabled = true,
-
-				keymap = {
-					["<Tab>"] = { "show", "accept" },
-					["<CR>"] = { "accept_and_enter", "fallback" },
-				},
-
-				completion = {
-					menu = {
-						auto_show = function(_)
-							return vim.fn.getcmdtype() == ":" or vim.fn.getcmdtype() == "@"
-						end,
-					},
-				},
-			},
-
-			appearance = {
-				kind_icons = {
-					Class = " ",
-					Color = " ",
-					Constant = "󰏿 ",
-					Constructor = " ",
-					Enum = " ",
-					EnumMember = " ",
-					Event = " ",
-					Field = " ",
-					File = " ",
-					Folder = " ",
-					Function = "󰊕 ",
-					Interface = " ",
-					Keyword = " ",
-					Method = "󰡱 ",
-					Module = " ",
-					Operator = " ",
-					Property = " ",
-					Reference = " ",
-					Snippet = "󱄽 ",
-					Struct = "󰆼 ",
-					Text = " ",
-					TypeParameter = " ",
-					Unit = " ",
-					Value = " ",
-					Variable = "󰀫 ",
-				},
-			},
-
-			completion = {
-				ghost_text = { enabled = true },
-				documentation = { auto_show = true, auto_show_delay_ms = 500 },
-				accept = { auto_brackets = { enabled = true } },
-				menu = {
-					draw = {
-						treesitter = { "lsp" },
-					},
-				},
-			},
-
-			sources = {
-				default = { "lsp", "path", "snippets", "buffer" },
-				providers = {
-					cmdline = {
-						min_keyword_length = function(ctx)
-							-- when typing a command, only show when the keyword is 3 characters or longer
-							if ctx.mode == "cmdline" and string.find(ctx.line, " ") == nil then
-								return 3
-							end
-							return 0
-						end,
-					},
-				},
-			},
-
-			fuzzy = { implementation = "prefer_rust_with_warning" },
-		},
-		opts_extend = { "sources.default" },
-	},
-
-	--======================
-	--   ts-comments.nvim
-	--======================
-	{
-		"folke/ts-comments.nvim",
-		opts = {},
-		event = { "BufReadPost", "BufNewFile" },
-	},
-
-	--=================
-	--   snacks.nvim
-	--=================
-	{
-		"snacks.nvim",
-
-		opts = {
-			indent = {
-				enabled = true,
-
-				animate = {
-					enabled = false,
-				},
-
-				chunk = {
-					enabled = true,
-				},
-			},
-		},
-	},
-
-	--========================
-	--   todo-comments.nvim
-	--========================
-	{
-		"folke/todo-comments.nvim",
-
-		event = { "BufReadPost", "BufWritePost", "BufNewFile" },
-		dependencies = { "plenary.nvim" },
-
-    -- stylua: ignore
+  {
+    "igorlfs/nvim-dap-view",
+    version = "1.*",
+    opts = {
+      auto_toggle = true,
+      winbar = {
+        controls = {
+          enabled = true,
+        },
+        sections = {
+          "watches",
+          "scopes",
+          "exceptions",
+          "breakpoints",
+          "threads",
+          "repl",
+          "disassembly",
+        },
+        default_section = "scopes",
+      },
+      virtual_text = {
+        enabled = true,
+      },
+    },
     keys = {
-      { "]t",         function() require("todo-comments").jump_next() end,              desc = "Next Todo Comment" },
-      { "[t",         function() require("todo-comments").jump_prev() end,              desc = "Previous Todo Comment" },
-      { "<leader>xt", "<cmd>Trouble todo toggle<cr>",                                   desc = "Todo (Trouble)" },
-      { "<leader>xT", "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      {
+        "<leader>du",
+        function()
+          require("dap-view").toggle()
+        end,
+        desc = "Toggle DapView",
+      },
+    },
+  },
+  {
+    "Jorenar/nvim-dap-disasm",
+    lazy = true,
+    dependencies = {
+      "nvim-dap-view",
+    },
+    opts = {
+      winbar = {
+        enabled = false,
+        labels = {
+          step_back = "",
+          step_into = "",
+          step_over = "",
+        },
+      },
+    },
+  },
+
+  {
+    "nvim-dap",
+    dependencies = {
+      {
+        "rcarriga/nvim-dap-ui",
+        enabled = false,
+      },
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        enabled = false,
+      },
+      "nvim-dap-view",
+      {
+        "Weissle/persistent-breakpoints.nvim",
+        opts = {
+          load_breakpoints_event = { "BufReadPost" },
+        },
+      },
+      "Jorenar/nvim-dap-disasm",
     },
 
-		opts = {},
-	},
-
-	--==================
-	--   outline.nvim
-	--==================
-	-- {
-	-- 	"hedyhli/outline.nvim",
-	-- 	keys = { { "<leader>co", "<cmd>Outline<cr>", desc = "Toggle Outline" } },
-	-- 	cmd = "Outline",
-	-- 	opts = {},
-	-- },
-
-	--==================
-	--   trouble.nvim
-	--==================
-	{
-		"folke/trouble.nvim",
-
-		dependencies = { "mini.icons" },
-		cmd = { "Trouble" },
-
-		opts = {},
-
-    -- stylua: ignore
     keys = {
-      { "<leader>x",  "",                                                           desc = "+quickfix/diagnostics" },
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",                        desc = "Diagnostics (Trouble)" },
-      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",           desc = "Buffer Diagnostics (Trouble)" },
-      { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",                desc = "Symbols (Trouble)" },
-      { "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP Definitions / references / ... (Trouble)" },
-      { "<leader>xL", "<cmd>Trouble loclist toggle<cr>",                            desc = "Location List (Trouble)" },
-      { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",                             desc = "Quickfix List (Trouble)" },
+      {
+        "<leader>db",
+        function()
+          require("persistent-breakpoints.api").toggle_breakpoint()
+        end,
+        desc = "Toggle Breakpoint",
+      },
+      {
+        "<leader>dB",
+        function()
+          require("persistent-breakpoints.api").set_conditional_breakpoint()
+        end,
+        desc = "Conditional Breakpoint",
+      },
     },
-	},
+  },
 
-	--=============
-	--   neotest
-	--=============
-	{
-		"nvim-neotest/neotest",
+  {
+    "nvim-mini/mini.pairs",
+    enabled = false,
+  },
 
-		dependencies = {
-			"plenary.nvim",
-			"nvim-treesitter",
-			"nvim-neotest/nvim-nio",
-			"antoinemadec/FixCursorHold.nvim",
+  {
+    "windwp/nvim-autopairs",
 
-			"nvim-neotest/neotest-python",
-			{ "fredrikaverpil/neotest-golang", version = "*" },
-		},
+    event = "InsertEnter",
 
-    -- stylua: ignore
-    keys = {
-      { "<leader>t",  "",                                                                                 desc = "+test" },
-      { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end,                      desc = "Run File (Neotest)" },
-      { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end,                            desc = "Run All Test Files (Neotest)" },
-      { "<leader>tr", function() require("neotest").run.run() end,                                        desc = "Run Nearest (Neotest)" },
-      { "<leader>tl", function() require("neotest").run.run_last() end,                                   desc = "Run Last (Neotest)" },
-      { "<leader>ts", function() require("neotest").summary.toggle() end,                                 desc = "Toggle Summary (Neotest)" },
-      { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output (Neotest)" },
-      { "<leader>tO", function() require("neotest").output_panel.toggle() end,                            desc = "Toggle Output Panel (Neotest)" },
-      { "<leader>tS", function() require("neotest").run.stop() end,                                       desc = "Stop (Neotest)" },
-      { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end,                 desc = "Toggle Watch (Neotest)" },
+    opts = {
+      map_c_h = true,
     },
 
-		opts = function()
-			return {
-				adapters = {
-					require("neotest-python"),
-					require("neotest-golang"),
-					require("rustaceanvim.neotest"),
-				},
-			}
-		end,
-	},
+    config = function(_, opts)
+      require("nvim-autopairs").setup(opts)
+      local npairs = require("nvim-autopairs")
+      local Rule = require("nvim-autopairs.rule")
+      local cond = require("nvim-autopairs.conds")
 
-	{ "kevinhwang91/nvim-bqf", ft = "qf" },
+      local brackets = { { "(", ")" }, { "[", "]" }, { "{", "}" } }
+      npairs.add_rules({
+        -- Rule for a pair with left-side ' ' and right side ' '
+        Rule(" ", " ")
+          -- Pair will only occur if the conditional function returns true
+          :with_pair(function(opts1)
+            -- We are checking if we are inserting a space in (), [], or {}
+            local pair = opts1.line:sub(opts1.col - 1, opts1.col)
+            return vim.tbl_contains({
+              brackets[1][1] .. brackets[1][2],
+              brackets[2][1] .. brackets[2][2],
+              brackets[3][1] .. brackets[3][2],
+            }, pair)
+          end)
+          :with_move(cond.none())
+          :with_cr(cond.none())
+          -- We only want to delete the pair of spaces when the cursor is as such: ( | )
+          :with_del(
+            function(opts1)
+              local col = vim.api.nvim_win_get_cursor(0)[2]
+              local context = opts1.line:sub(col - 1, col + 2)
+              return vim.tbl_contains({
+                brackets[1][1] .. "  " .. brackets[1][2],
+                brackets[2][1] .. "  " .. brackets[2][2],
+                brackets[3][1] .. "  " .. brackets[3][2],
+              }, context)
+            end
+          ),
+      })
 
-	{
-		"stevearc/overseer.nvim",
-
-		cmd = {
-			"OverseerOpen",
-			"OverseerClose",
-			"OverseerToggle",
-			"OverseerSaveBundle",
-			"OverseerLoadBundle",
-			"OverseerDeleteBundle",
-			"OverseerRunCmd",
-			"OverseerRun",
-			"OverseerInfo",
-			"OverseerBuild",
-			"OverseerQuickAction",
-			"OverseerTaskAction",
-			"OverseerClearCache",
-		},
-
-    -- stylua: ignore
-    keys = {
-      { "<leader>o",  "",                             desc = "+overseer" },
-      { "<leader>ow", "<cmd>OverseerToggle<cr>",      desc = "Task list" },
-      { "<leader>oo", "<cmd>OverseerRun<cr>",         desc = "Run task" },
-      { "<leader>oq", "<cmd>OverseerQuickAction<cr>", desc = "Action recent task" },
-      { "<leader>oi", "<cmd>OverseerInfo<cr>",        desc = "Overseer Info" },
-      { "<leader>ob", "<cmd>OverseerBuild<cr>",       desc = "Task builder" },
-      { "<leader>ot", "<cmd>OverseerTaskAction<cr>",  desc = "Task action" },
-      { "<leader>oc", "<cmd>OverseerClearCache<cr>",  desc = "Clear cache" },
-      { "<leader>ol", "<cmd>OverseerRestartLast<cr>", desc = "Restart Last Task" },
-    },
-
-		opts = {
-			-- templates = { "builtin", "user" },
-			task_list = {
-				min_height = { 24, 0.25 },
-				bindings = {
-					["<C-h>"] = false,
-					["<C-j>"] = false,
-					["<C-k>"] = false,
-					["<C-l>"] = false,
-				},
-			},
-			form = {
-				win_opts = {
-					winblend = 0,
-				},
-			},
-			confirm = {
-				win_opts = {
-					winblend = 0,
-				},
-			},
-			task_win = {
-				win_opts = {
-					winblend = 0,
-				},
-			},
-		},
-
-		config = function(_, opts)
-			require("overseer").setup(opts)
-
-			vim.api.nvim_create_user_command("OverseerRestartLast", function()
-				local overseer = require("overseer")
-				local tasks = overseer.list_tasks({ recent_first = true })
-				if vim.tbl_isempty(tasks) then
-					vim.notify("No tasks found", vim.log.levels.WARN)
-				else
-					overseer.run_action(tasks[1], "restart")
-				end
-			end, {})
-		end,
-	},
-
-	--************************
-	--          Rust
-	--************************
-	--==================
-	--   rustaceanvim
-	--==================
-	{
-		"mrcjkb/rustaceanvim",
-		-- version = "^8",
-		ft = "rust",
-
-		init = function()
-			local dap = require("dap")
-
-			vim.g.rustaceanvim = {
-				-- tools = {},
-				-- -- Plugin configuration
-				-- -- LSP configuration
-				server = {
-					on_attach = function(client, bufnr)
-						vim.keymap.set("n", "<leader>ca", function()
-							vim.cmd.RustLsp("codeAction")
-						end, { buffer = bufnr, desc = "Code Actions" })
-						vim.keymap.set("n", "K", function()
-							vim.cmd.RustLsp({ "hover", "actions" })
-						end, { buffer = bufnr, desc = "Hover" })
-					end,
-					-- default_settings = {
-					-- 	-- rust-analyzer language server configuration
-					-- 	["rust-analyzer"] = {},
-				},
-				-- },
-				-- DAP configuration
-				dap = {
-					configuration = {
-						name = "Clear step-avoid-regexp",
-						type = "codelldb",
-						request = "launch",
-						stopOnEntry = false,
-						sourceLanguages = { "rust" },
-						postRunCommands = {
-							-- sourceLanguagesを設定するとcodelldbのlang_support/rust.pyが起動され
-							-- lldbの設定であるtarget.process.thread.step-avoid-regexpにスキップすべき関数の正規表現がセットされる
-							-- これをクリアすることでRustの標準ライブラリにもステップインできる様になる
-							-- 以下がクリアするコマンド
-							"settings clear target.process.thread.step-avoid-regexp",
-						},
-					},
-				},
-			}
-		end,
-	},
-
-	{
-		"alexpasmantier/krust.nvim",
-		ft = "rust",
-		opts = {},
-	},
-
-	--=================
-	--   crates.nvim
-	--=================
-	{
-		"saecki/crates.nvim",
-		event = { "BufRead Cargo.toml" },
-		opts = {
-			completion = {
-				crates = {
-					enabled = true,
-				},
-			},
-			lsp = {
-				enabled = true,
-				actions = true,
-				completion = true,
-				hover = true,
-			},
-		},
-	},
-
-	-- {
-	-- 	"p00f/clangd_extensions.nvim",
-	-- 	lazy = true,
-	-- 	ft = { "c", "cpp" },
-	-- 	keys = {
-	-- 		{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
-	-- 	},
-	--
-	-- 	opts = {
-	-- 		inlay_hints = {
-	-- 			inline = false,
-	-- 		},
-	-- 	},
-	-- },
-
-	--***********************
-	--         Lua
-	--***********************
-	--==================
-	--   lazydev.nvim
-	--==================
-	{
-		"folke/lazydev.nvim",
-		ft = "lua", -- only load on lua files
-		opts = {
-			library = {
-				-- See the configuration section for more details
-				-- Load luvit types when the `vim.uv` word is found
-				{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
-				{ path = "snacks.nvim/lua/snacks" },
-			},
-		},
-	},
-	{
-		"blink.cmp",
-		opts = {
-			sources = {
-				default = { "lazydev", "lsp", "path", "snippets", "buffer" },
-				providers = {
-					lazydev = {
-						name = "LazyDev",
-						module = "lazydev.integrations.blink",
-						-- make lazydev completions top priority (see `:h blink.cmp`)
-						score_offset = 100,
-					},
-				},
-			},
-		},
-	},
+      -- For each pair of brackets we will add another rule
+      for _, bracket in pairs(brackets) do
+        npairs.add_rules({
+          -- Each of these rules is for a pair with left-side '( ' and right-side ' )' for each bracket type
+          Rule(bracket[1] .. " ", " " .. bracket[2])
+            :with_pair(cond.none())
+            :with_move(function(opts1)
+              return opts1.char == bracket[2]
+            end)
+            :with_del(cond.none())
+            :use_key(bracket[2])
+            -- Removes the trailing whitespace that can occur without this
+            :replace_map_cr(function(_)
+              return "<C-c>2xi<CR><C-c>O"
+            end),
+        })
+      end
+    end,
+  },
 }
