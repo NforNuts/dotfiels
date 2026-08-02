@@ -1,50 +1,52 @@
-return {
+return {}
+
+local opts = {
 	--=====================
 	--   nvim-treesitter
 	--=====================
 	{
 		"nvim-treesitter/nvim-treesitter",
-		branch = "master",
+		branch = "main",
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufWritePre", "BufNewFile", "VeryLazy" },
 
 		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
+			{ "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
 		},
 
 		opts = {
-			ensure_installed = {
-				"bash",
-				"c",
-				"cpp",
-				"diff",
-				"go",
-				"gomod",
-				"gosum",
-				"gowork",
-				"html",
-				"javascript",
-				"jsdoc",
-				"json",
-				"jsonc",
-				"lua",
-				"luadoc",
-				"luap",
-				"markdown",
-				"markdown_inline",
-				"printf",
-				"python",
-				"query",
-				"regex",
-				"rust",
-				"toml",
-				"tsx",
-				"typescript",
-				"vim",
-				"vimdoc",
-				"xml",
-				"yaml",
-			},
+			-- ensure_installed = {
+			-- 	"bash",
+			-- 	"c",
+			-- 	"cpp",
+			-- 	"diff",
+			-- 	"go",
+			-- 	"gomod",
+			-- 	"gosum",
+			-- 	"gowork",
+			-- 	"html",
+			-- 	"javascript",
+			-- 	"jsdoc",
+			-- 	"json",
+			-- 	"jsonc",
+			-- 	"lua",
+			-- 	"luadoc",
+			-- 	"luap",
+			-- 	"markdown",
+			-- 	"markdown_inline",
+			-- 	"printf",
+			-- 	"python",
+			-- 	"query",
+			-- 	"regex",
+			-- 	"rust",
+			-- 	"toml",
+			-- 	"tsx",
+			-- 	"typescript",
+			-- 	"vim",
+			-- 	"vimdoc",
+			-- 	"xml",
+			-- 	"yaml",
+			-- },
 
 			textobjects = {
 				select = {
@@ -75,7 +77,7 @@ return {
 		},
 
 		config = function(_, opts)
-			require("nvim-treesitter.configs").setup(opts)
+			local ts = require("nvim-treesitter").setup(opts)
 		end,
 	},
 

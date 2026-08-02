@@ -24,6 +24,7 @@ return {
 				"taplo",
 				"vtsls",
 				"vue_ls",
+				"ruff",
 			},
 		},
 
