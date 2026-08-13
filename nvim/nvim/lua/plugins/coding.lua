@@ -19,6 +19,11 @@ vim.g.rustaceanvim = {
 
 return {
   {
+    "rauls-kjarners/omp.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
+  {
     "nvim-lspconfig",
     opts = function(_, opts)
       opts.inlay_hints = { enabled = false }
