@@ -9,12 +9,12 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export VI_MODE_SET_CURSOR=true
 
 path=(
-  ~/.cargo/bin
   ~/.local/bin
-  $(/opt/homebrew/bin/go env GOBIN)
+  `$(brew --prefix rustup)/bin/rustc --print sysroot`/bin
+  # $(brew --prefix rustup)/bin
+  $(go env GOBIN)
   $path
   )
-. "$HOME/.cargo/env"
 
 bindkey -e
 
@@ -27,15 +27,9 @@ eval "$(zoxide init zsh)"
 # zabrze initialization
 eval "$(zabrze init --bind-keys)"
 
+eval "$(fnm env --use-on-cd --shell zsh)"
+
 source <(fzf --zsh)
-
-# nvm initialization
-# export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
@@ -50,13 +44,6 @@ export FZF_DEFAULT_OPTS="--height=40% --reverse --border"
 export EDITOR=nvim
 
 autoload -Uz compinit && compinit
-
-nfz() {
-  nvim $(rg -l $1 | fzf)
-}
-nfzh() {
-  nvim $(rg -.l $1 | fzf)
-}
 
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
