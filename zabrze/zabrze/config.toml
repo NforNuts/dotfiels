@@ -34,6 +34,13 @@ trigger = "gcm"
 snippet = "git committ -m '{}'"
 
 [[snippets]]
+name = "git commit"
+trigger = "cm"
+snippet = "commit -m {}"
+global = true
+context = '^git\s'
+
+[[snippets]]
 name = "git log --graph --oneline"
 trigger = "gl"
 snippet = "git log --graph --oneline"
@@ -54,6 +61,59 @@ trigger = "yz"
 snippet = "yazi"
 
 [[snippets]]
+name = "uenv"
+trigger = "uenv"
+snippet = ". .venv/bin/activate"
+
+[[snippets]]
+name = "reasonix"
+trigger = "rnix"
+snippet = "reasonix"
+
+[[snippets]]
 name = "nvim"
 trigger = "v"
 snippet = "nvim"
+
+[[snippets]]
+name = "herdr"
+trigger = "hdr"
+snippet = "herdr"
+
+[[snippets]]
+name = "open"
+trigger = "o"
+snippet = "open"
+
+[[snippets]]
+name = "container"
+trigger = "c"
+snippet = "container"
+
+[[snippets]]
+name = "container image"
+trigger = "i"
+snippet = "image"
+global = true
+context = '^container\s'
+
+[[snippets]]
+name = "container run"
+trigger = "r"
+snippet = "run"
+global = true
+context = '^container\s'
+
+[[snippets]]
+name = "container run -it"
+trigger = "rit"
+snippet = "run -it"
+global = true
+context = '^container\s'
+
+[[snippets]]
+name = "container run -it long"
+trigger = "runit"
+snippet = "run -it"
+global = true
+context = '^container\s'
