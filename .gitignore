@@ -1,3 +1,7 @@
 .DS_Store
 target/
+omp/omp/*
+!omp/omp/agent/
+omp/omp/agent/*
+!omp/omp/agent/models.yml
 zsh/claude.env
