@@ -31,12 +31,12 @@ snippet = "git status"
 [[snippets]]
 name = "git commit -m"
 trigger = "gcm"
-snippet = "git committ -m '{}'"
+snippet = "git commit -m '{}'"
 
 [[snippets]]
 name = "git commit"
 trigger = "cm"
-snippet = "commit -m {}"
+snippet = "commit -m '{}'"
 global = true
 context = '^git\s'
 
