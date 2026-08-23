@@ -15,3 +15,8 @@ vim.api.nvim_create_autocmd("User", {
     end
   end,
 })
+
+if not vim.g.md_wrap_spell then
+  vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
+else
+end
