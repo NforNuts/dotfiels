@@ -59,11 +59,6 @@ setopt hist_reduce_blanks
 
 setopt auto_cd
 
-zstyle ':completion:*:default' menu select=2
-zstyle ':completion:*' matcher-list '' 'm:{[:lower:]}={[:upper:]}' '+m:{[:upper:]}={[:lower:]}'
-zstyle ':completion:*' format '%B%F{blue}%d%f%b'
-zstyle ':completion:*' group-name ''
-
 # pnpm
 export PNPM_HOME="/Users/seiji/Library/pnpm"
 case ":$PATH:" in
