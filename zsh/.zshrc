@@ -66,3 +66,28 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
 # pnpm end
+
+function ghq-cd() {
+  local selected
+  selected=$(
+    ghq list |
+      awk -v root="$(ghq root)" '
+        {
+          i = index($0, "/")
+          display = substr($0, i + 1)
+          print display "\t" root "/" $0
+        }
+      ' |
+      fzf --height 50% --reverse \
+          --prompt 'ghq> ' \
+          --delimiter='\t' \
+          --with-nth=1 \
+          --nth=1 \
+          --preview 'ls -la --color=always {2}' \
+          --preview-window 'right:50%'
+  ) || return
+  [[ -n "$selected" ]] && pushd -q "${selected##*$'\t'}" && zle reset-prompt
+}
+
+zle -N ghq-cd
+bindkey '^G' ghq-cd
