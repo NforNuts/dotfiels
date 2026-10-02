@@ -60,7 +60,7 @@ setopt hist_reduce_blanks
 setopt auto_cd
 
 # pnpm
-export PNPM_HOME="/Users/seiji/Library/pnpm"
+export PNPM_HOME="/Users/seiji/.local/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME/bin:"*) ;;
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
